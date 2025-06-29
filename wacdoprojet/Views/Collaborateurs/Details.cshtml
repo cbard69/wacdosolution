@@ -1,0 +1,146 @@
+﻿@model wacdoprojet.Models.Collaborateur
+
+@{
+    ViewData["Title"] = "Détails";
+}
+
+<h1>Détails</h1>
+
+<div>
+    <h4>Collaborateur</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Nom</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Nom)
+        </dd>
+
+        <dt class="col-sm-2">Prénom</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Prénom)
+        </dd>
+
+        <dt class="col-sm-2">Date d'embauche</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Datepremiereembauche)
+        </dd>
+
+        <dt class="col-sm-2">Email</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        
+        <dt class="col-sm-2">Administrateur</dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Administrateur)
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Retour à la liste</a>
+</div>
+<h4 class="mt-4">Filtrer les affectations</h4>
+
+<form method="get" asp-action="Details" asp-route-id="@Model.Id" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="bg-info text-white d-block text-center px-2 py-1">Nom</label>
+        <input type="text" name="nom" value="@ViewBag.FiltreNom" class="form-control" placeholder="Nom" />
+    </div>
+    <div class="col-md-3">
+        <label class="bg-info text-white d-block text-center px-2 py-1">Prénom</label>
+        <input type="text" name="prenom" value="@ViewBag.FiltrePrenom" class="form-control" placeholder="Prénom" />
+    </div>
+    <div class="col-md-3">
+        <label class="bg-info text-white d-block text-center px-2 py-1">Poste</label>
+        <input type="text" name="poste" value="@ViewBag.FiltrePoste" class="form-control" placeholder="Poste" />
+    </div>
+    <div class="col-md-3">
+        <label class="bg-info text-white d-block text-center px-2 py-1">Date de début</label>
+        <input type="date" name="dateDebut" value="@ViewBag.FiltreDateDebut" class="form-control" />
+    </div>
+    <div class="col-12 text-end">
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Réinitialiser</a>
+    </div>
+</form>
+
+
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Les affectations</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.Collaborateuraffectation?.Any() == true)
+        {
+            @* si affectation en cours ================================================================*@
+           
+                var affectationEnCours = Model.Collaborateuraffectation?
+                .FirstOrDefault(a => a.Datefin == null);
+            
+            @if (affectationEnCours != null)
+            {
+                <div class="alert alert-warning">
+                    <strong>⚠ Affectation en cours détectée :</strong><br />
+                    Restaurant : <strong>@affectationEnCours.Restaurant?.name</strong><br />
+                    Poste : <strong>@affectationEnCours.Poste?.Intituleposte</strong><br />
+                    Début : <strong>@affectationEnCours.Datedebut.ToString("dd/MM/yyyy")</strong>
+                </div>
+            }
+            @* ========================================================================================*@
+
+             <table class="table table-bordered table-striped">
+                 <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Restaurant</th>
+                        <th>Intitulé du poste</th>
+                        <th>Date de début </th>
+                        <th>Date de fin</th>
+                     </tr>
+                     </thead>
+               <tbody>
+                @foreach (var aff in Model.Collaborateuraffectation)
+                {
+                    
+                     
+                         <tr>
+                            
+                            <td>@aff.Collaborateur?.Nom</td>
+                            <td>@aff.Collaborateur?.Prénom</td>
+                            
+                            <td>@aff.Restaurant?.name</td>
+                            
+                            <td>@aff.Poste?.Intituleposte</td>
+                            <td>@aff.Datedebut</td>
+                            <td>@aff.Datefin</td>
+                          </tr>                     
+                  
+                }
+              </tbody> 
+              </table>
+
+            
+        }
+        else
+        {
+            <div class="alert alert-secondary mb-0" role="alert">
+                Aucune Affectation pour ces critères.
+            </div>
+        }
+    </div>
+</div>
+@* ==============================================================================================================*@
+<div class="card-footer text-end">
+    <a asp-controller="Affectations"
+       asp-action="Create"
+       asp-route-collaborateurId="@Model.Id"
+       asp-route-retourcollaborateur="true"
+       class="btn btn-sm btn-success">
+        <i class="bi bi-plus-lg"></i> Créer une affectation
+    </a>
+@* ==============================================================================================================*@
+</div>

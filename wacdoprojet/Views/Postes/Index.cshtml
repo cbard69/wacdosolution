@@ -1,0 +1,70 @@
+﻿@model IEnumerable<wacdoprojet.Models.Poste>
+
+@{
+    ViewData["Title"] = "Gestion des postes";
+}
+
+<h1>Les Postes</h1>
+
+<!-- Formulaire de recherche -->
+
+    
+<form method="get" class="mb-3">
+    <div class="d-flex" style="gap: 8px;">
+    <input type="text" name="intitulePoste" value="@ViewBag.IntitulePosteRecherche" placeholder="Rechercher par poste.." />
+    <input type="submit" value="Rechercher" class="btn btn-primary" />
+
+    </div>
+</form>
+<!-- Affichage message si aucun résultat -->
+@if (ViewBag.AucunResultat == true)
+{
+    <div class="alert alert-warning">
+        Aucun poste  trouvé.
+    </div>
+}
+else if (Model != null && Model.Any())
+
+{
+<p>
+        <a asp-action="Create" class="btn btn-success">Créer un nouveau poste</a>
+</p>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action="Index"
+                       asp-route-sortOrder="@ViewBag.NomSortParm"
+                       asp-route-name="@ViewBag.IntitulePosteRecherche"
+                       asp-route-adresse="@ViewBag.IntitulePostesRecherche">
+                       IntitulePoste
+                        @(ViewBag.CurrentSort == "Intituleposte" ? "🔼" :
+                            ViewBag.CurrentSort == "Intituleposte_desc" ? "🔽" : "")
+                    </a>
+                </th>
+
+                 <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Intituleposte)</td>
+                                       <td>
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Modifier</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Détails</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Supprimer</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Aucun poste à afficher.</p>
+}

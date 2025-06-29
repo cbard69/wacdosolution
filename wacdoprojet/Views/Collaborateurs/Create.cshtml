@@ -1,0 +1,53 @@
+﻿@model wacdoprojet.Models.Collaborateur
+@{
+    ViewData["Title"] = "Créer un collaborateur";
+}
+
+<h2>Créer un collaborateur</h2>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label asp-for="Nom" class="control-label"></label>
+        <input asp-for="Nom" class="form-control" />
+        <span asp-validation-for="Nom" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Prénom" class="control-label"></label>
+        <input asp-for="Prénom" class="form-control" />
+        <span asp-validation-for="Prénom" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Email" class="control-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    
+    <div class="form-group">
+        <label asp-for="Datepremiereembauche" class="control-label"></label>
+        <input asp-for="Datepremiereembauche" class="form-control" />
+        <span asp-validation-for="Datepremiereembauche" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Administrateur" class="control-label"></label>
+        <input asp-for="Administrateur" type="checkbox" class="form-check-input" />
+        <span asp-validation-for="Administrateur" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="password">Mot de passe (obligatoire si admin)</label>
+        <input type="password" name="password" id="password" class="form-control" />
+        <span class="text-danger" id="password-error"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Créer</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

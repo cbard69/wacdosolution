@@ -1,0 +1,65 @@
+﻿
+
+
+@model wacdoprojet.Models.Collaborateur
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Modifier un collaborateur</h2>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Nom" class="control-label"></label>
+        <input asp-for="Nom" class="form-control" />
+        <span asp-validation-for="Nom" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Prénom" class="control-label"></label>
+        <input asp-for="Prénom" class="form-control" />
+        <span asp-validation-for="Prénom" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email" class="control-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Datepremiereembauche" class="control-label"></label>
+        <input asp-for="Datepremiereembauche" class="form-control" />
+        <span asp-validation-for="Datepremiereembauche" class="text-danger"></span>
+    </div>
+
+    <div class="form-check">
+        <input asp-for="Administrateur" type="checkbox" class="form-check-input" />
+        <label asp-for="Administrateur" class="form-check-label"></label>
+        <span asp-validation-for="Administrateur" class="text-danger"></span>
+    </div>
+   @*<div class="form-group">
+        <label for="password">Mot de passe (obligatoire si admin)</label>
+        <input type="password" name="password" id="password" class="form-control" />
+        <span class="text-danger" id="password-error"></span>
+    </div>*@
+
+    <div class="form-group">
+        <label for="newPassword">Nouveau mot de passe (laisser vide pour ne pas le changer)</label>
+        <input type="password" name="newPassword" id="newPassword" class="form-control" />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

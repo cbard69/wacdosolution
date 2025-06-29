@@ -1,0 +1,48 @@
+﻿@model wacdoprojet.Models.Affectation
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Affectation</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Collaborateur
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Collaborateur?.Nom @Model.Collaborateur?.Prénom
+        </dd>
+        <dt class="col-sm-2">
+            Restaurant
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Restaurant?.name 
+        </dd>
+        <dt class="col-sm-2">
+            Poste
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Poste?.Intituleposte 
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Datedebut)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Datedebut)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Datefin)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Datefin)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

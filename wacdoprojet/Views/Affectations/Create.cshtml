@@ -1,0 +1,118 @@
+﻿@model wacdoprojet.Models.Affectation
+
+@{
+    ViewData["Title"] = "Création d'une affectation";
+    var affectationsExistantes = ViewBag.AffectationsExistantes as List<wacdoprojet.Models.Affectation>;
+
+}
+@* ============================================================================================= *@
+
+<h2>Affectations existantes pour ce restaurant</h2>
+
+@if (affectationsExistantes != null && affectationsExistantes.Any())
+{
+    <table class="table table-bordered table-sm">
+        <thead class="table-light">
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Poste</th>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var aff in affectationsExistantes)
+            {
+                <tr>
+                    <td>@aff.Collaborateur?.Nom</td>
+                    <td>@aff.Collaborateur?.Prénom</td>
+                    <td>@aff.Poste?.Intituleposte</td>
+                    <td>@aff.Datedebut.ToString("dd/MM/yyyy")</td>
+                    <td>@(aff.Datefin?.ToString("dd/MM/yyyy") ?? "En cours")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Aucune affectation existante pour ce restaurant.</p>
+}
+
+
+
+@* ============================================================================================= *@
+<h1>Create</h1>
+
+<h4>Affectation</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="PosteId" class="control-label">Poste</label>
+                <select asp-for="PosteId" class="form-control" asp-items="@(ViewData["PosteId"] as SelectList)">
+                    <option value="">-- Sélectionnez un poste --</option>
+                </select>
+                <span asp-validation-for="PosteId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+            <label asp-for="CollaborateurId" class="control-label">Collaborateur</label>
+            <select asp-for="CollaborateurId" class="form-control" asp-items="@(ViewData["CollaborateurId"] as SelectList)">
+                <option value="">-- Sélectionnez un collaborateur --</option>
+            </select>
+            <span asp-validation-for="CollaborateurId" class="text-danger"></span>
+            </div>
+           
+            @if (ViewData["RestaurantId"] is int)
+            {
+                <input asp-for="RestaurantId" type="hidden" value="@ViewData["RestaurantId"]" />
+            }
+            else
+            {
+                <label asp-for="RestaurantId" class="form-label">Restaurant</label>
+                <select asp-for="RestaurantId" class="form-control" asp-items="@(ViewData["RestaurantId"] as SelectList)">
+                    <option value="">-- Sélectionnez un restaurant --</option>
+                </select>
+                <span asp-validation-for="RestaurantId" class="text-danger"></span>
+            }
+
+          
+            
+            <div class="form-group">
+                <label asp-for="Datedebut" class="control-label"></label>
+                <input asp-for="Datedebut" class="form-control" />
+                <span asp-validation-for="Datedebut" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Datefin" class="control-label"></label>
+                <input asp-for="Datefin" class="form-control" />
+                <span asp-validation-for="Datefin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            @if ((bool?)ViewData["RetourRestaurant"] == true)
+            {
+                <input type="hidden" name="retourrestaurant" value="true" />
+            }
+        </form>
+    </div>
+</div>
+
+<div>
+    @if ((bool?)ViewData["RetourRestaurant"] == true && ViewData["RestaurantId"] != null)
+    {
+        <a asp-action="Details" asp-controller="Restaurants" asp-route-id="@ViewData["RestaurantId"]">Retour au restaurant</a>
+    }
+    else
+    {
+        <a asp-action="Index">Retour à la liste des affectations</a>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,63 @@
+﻿@model IEnumerable<wacdoprojet.Models.Restaurant>
+
+@{
+    ViewData["Title"] = "Index";
+    var restaurantType = typeof(wacdoprojet.Models.Restaurant);
+}
+
+<h1>Les restaurants</h1>
+
+<!-- Formulaire de recherche -->
+<form method="get" class="mb-3">
+    <input type="text" name="name" value="@ViewBag.NomRecherche" placeholder="Rechercher par nom..." />
+    <input type="text" name="adresse" value="@ViewBag.AdresseRecherche" placeholder="Rechercher par adresse..." />
+    <input type="submit" value="Rechercher" class="btn btn-primary" />
+</form>
+
+<!-- Affichage message si aucun résultat -->
+@if (ViewBag.AucunResultat == true)
+{
+    <div class="alert alert-warning">
+        Aucun restaurant trouvé.
+    </div>
+}
+else if (Model != null && Model.Any())
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Créer un nouveau restaurant</a>
+    </p>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>@Html.DisplayName("name")</th>
+                <th>@Html.DisplayName("adresse")</th>
+                <th>@Html.DisplayName("cp")</th>
+                <th>@Html.DisplayName("ville")</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.adresse)</td>
+                    <td>@Html.DisplayFor(modelItem => item.cp)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ville)</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Modifier</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Détails</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Supprimer</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Aucun restaurant à afficher.</p>
+}
