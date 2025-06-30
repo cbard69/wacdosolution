@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: wacdosolution
-    runtime: dotnet
-    repo: https://github.com/cbard69/wacdosolution
-    branch: main
-    buildCommand: "dotnet publish -c Release -o ./publish"
-    startCommand: "dotnet ./publish/wacdoprojet.dll"
-    publishPath: ./publish
