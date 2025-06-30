@@ -22,7 +22,7 @@ namespace wacdoprojet.Controllers
         }
         [AllowAnonymous]
         // GET: Restaurants
-        public async Task<IActionResult> Index(string name, string ville, string CP,  string sortOrder)
+        public async Task<IActionResult> Index(string? name, string? ville, string CP,  string? sortOrder)
         {
             ViewBag.NomRecherche = name;
             ViewBag.VilleRecherche = ville;
@@ -60,12 +60,12 @@ namespace wacdoprojet.Controllers
         }
 
 
-        public async Task<IActionResult> Details(int? id, string nom, string prenom, string poste, DateTime? dateDebut)
+        public async Task<IActionResult> Details(int? id, string nom, string? prenom, string? poste, DateTime? dateDebut)
         {
             if (id == null)
             {
                 return NotFound();
-            }
+            } 
             //On ramène les données
             var restaurant = await _context.Restaurants
                 .Include(r => r.RestaurantAffectations!)
@@ -180,6 +180,11 @@ namespace wacdoprojet.Controllers
             return View(restaurant);
         }
 
+        private bool RestaurantExists(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         // GET: Restaurants/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -203,19 +208,26 @@ namespace wacdoprojet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var restaurant = await _context.Restaurants.FindAsync(id);
-            if (restaurant != null)
+            var restaurant = await _context.Restaurants
+              .Include(c =>c.RestaurantAffectations)
+              .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (restaurant == null)
             {
-                _context.Restaurants.Remove(restaurant);
+                return NotFound();
             }
 
+            // ✅ S'il a des affectations, on bloque la suppression
+            if (restaurant.RestaurantAffectations != null && restaurant.RestaurantAffectations.Any())
+            {
+                TempData["ErreurSuppression"] = "Impossible de supprimer ce restaurant : il a des affectations existantes.";
+                return RedirectToAction(nameof(Delete), new { id = restaurant.Id });
+            }
+
+            // ✅ Aucun lien → on peut supprimer
+            _context.Restaurants.Remove(restaurant);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool RestaurantExists(int id)
-        {
-            return _context.Restaurants.Any(e => e.Id == id);
         }
     }
 }

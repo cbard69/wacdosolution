@@ -6,9 +6,21 @@ using wacdoprojet.Data;
 using wacdoprojet.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddUserSecrets<Program>() // 🔑 Ajout pour activer user-secrets
+    .AddEnvironmentVariables();
+
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+    throw new InvalidOperationException("La chaîne de connexion est manquante.");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySQL(connectionString));
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySQL(connectionString: connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -26,6 +38,8 @@ builder.Services.AddControllersWithViews();
 // ajout le 01062025
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+Console.WriteLine("API Key test depuis Program.cs: " + builder.Configuration["SendGrid:ApiKey"]);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

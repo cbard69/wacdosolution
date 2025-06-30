@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using wacdoprojet.Models;
 
 namespace wacdoprojet.Controllers
 {
+    [Authorize]
     public class PostesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,10 +22,11 @@ namespace wacdoprojet.Controllers
         }
 
         // GET: Postes
+        [AllowAnonymous]
         public async Task<IActionResult> Index(string intitulePoste, string sortOrder)
         {   //  Pour conserver la valeur saisie dans le formulaire
             ViewBag.IntitulePosteRecherche = intitulePoste;
-           
+
             // Pour gérer les icônes fléchées
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NomSortParm = string.IsNullOrEmpty(sortOrder) || sortOrder == "Intituleposte" ? "Intituleposte_desc" : "Intituleposte";
@@ -38,7 +41,7 @@ namespace wacdoprojet.Controllers
             postes = sortOrder switch
             {
                 "Intituleposte_desc" => postes.OrderByDescending(r => r.Intituleposte),
-                                   _ => postes.OrderBy(r => r.Intituleposte),
+                _ => postes.OrderBy(r => r.Intituleposte),
             };
 
 
@@ -47,10 +50,10 @@ namespace wacdoprojet.Controllers
 
             return View(postesList);
 
-        
 
 
-            
+
+
 
         }
 
@@ -145,6 +148,11 @@ namespace wacdoprojet.Controllers
             return View(poste);
         }
 
+        private bool PosteExists(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         // GET: Postes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -168,19 +176,26 @@ namespace wacdoprojet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var poste = await _context.Postes.FindAsync(id);
-            if (poste != null)
+            var poste = await _context.Postes
+               .Include(c => c.Posteaffectation)
+               .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (poste == null)
             {
-                _context.Postes.Remove(poste);
+                return NotFound();
             }
 
+            // ✅ S'il a des affectations, on bloque la suppression
+            if (poste.Posteaffectation != null && poste.Posteaffectation.Any())
+            {
+                TempData["ErreurSuppression"] = "Impossible de supprimer ce restaurant : il a des affectations existantes.";
+                return RedirectToAction(nameof(Delete), new { id = poste.Id });
+            }
+
+            // ✅ Aucun lien → on peut supprimer
+            _context.Postes.Remove(poste);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool PosteExists(int id)
-        {
-            return _context.Postes.Any(e => e.Id == id);
         }
     }
 }

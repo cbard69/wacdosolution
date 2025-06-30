@@ -5,7 +5,9 @@ using wacdoprojet.Data;
 using wacdoprojet.Models;
 using System.Composition;
 using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize]
 public class CollaborateursController : Controller
 {
     private readonly UserManager<Collaborateur> _userManager;
@@ -75,8 +77,9 @@ public class CollaborateursController : Controller
     }
 
 
+
     // GET: Collaborateurs
-    // GET: Collaborateurs
+    [AllowAnonymous]
     public async Task<IActionResult> Index(string name, string prenom, string email, bool nonAffectes = false)
     {
         ViewBag.NomRecherche = name;
@@ -130,7 +133,7 @@ public class CollaborateursController : Controller
 
         // On filtre dans la liste uniquement SES affectations
         if (!string.IsNullOrWhiteSpace(nom))
-            affectations = affectations.Where(a => a.Collaborateur.Nom != null && a.Collaborateur.Nom.Contains(nom, StringComparison.OrdinalIgnoreCase));
+            affectations = affectations.Where(predicate: a => a.Collaborateur.Nom != null && a.Collaborateur.Nom.Contains(nom, StringComparison.OrdinalIgnoreCase));
 
         if (!string.IsNullOrWhiteSpace(prenom))
             affectations = affectations.Where(a => a.Collaborateur.Prénom != null && a.Collaborateur.Prénom.Contains(prenom, StringComparison.OrdinalIgnoreCase));
@@ -324,16 +327,31 @@ public class CollaborateursController : Controller
     }
 
     // POST: Collaborateurs/Delete/id
+   
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(string id)
     {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user != null)
+        var collaborateur = await _context.Users
+            .Include(c => c.Collaborateuraffectation)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (collaborateur == null)
         {
-            await _userManager.DeleteAsync(user);
+            return NotFound();
         }
 
+        // ✅ S'il a des affectations, on bloque la suppression
+        if (collaborateur.Collaborateuraffectation != null && collaborateur.Collaborateuraffectation.Any())
+        {
+            TempData["ErreurSuppression"] = "Impossible de supprimer ce collaborateur : il a des affectations existantes.";
+            return RedirectToAction(nameof(Delete), new { id = collaborateur.Id });
+        }
+
+        // ✅ Aucun lien → on peut supprimer
+        _context.Users.Remove(collaborateur);
+        await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
+
 }
