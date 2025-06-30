@@ -1,12 +1,9 @@
-services
-  - type web
-    name wacdoprojet
-    env dotnet
-    buildCommand dotnet publish -c Release -o publish
-    startCommand dotnet wacdoprojet.dll
-    buildFilter
-      paths
-        - wacdoprojet
-    envVars
-      - key ASPNETCORE_ENVIRONMENT
-        value Production
+services:
+  - type: web
+    name: wacdosolution
+    runtime: dotnet
+    repo: https://github.com/cbard69/wacdosolution
+    branch: main
+    buildCommand: "dotnet publish -c Release -o ./publish"
+    startCommand: "dotnet ./publish/wacdoprojet.dll"
+    publishPath: ./publish
