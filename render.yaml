@@ -1,0 +1,12 @@
+services
+  - type web
+    name wacdoprojet
+    env dotnet
+    buildCommand dotnet publish -c Release -o publish
+    startCommand dotnet wacdoprojet.dll
+    buildFilter
+      paths
+        - wacdoprojet
+    envVars
+      - key ASPNETCORE_ENVIRONMENT
+        value Production
