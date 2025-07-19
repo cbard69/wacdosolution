@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using wacdoprojet.Models;
 
 namespace wacdoprojet.Controllers
 {
+    [Authorize]
     public class AffectationsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,6 +22,7 @@ namespace wacdoprojet.Controllers
         }
 
         // GET: Affectations
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             // chargement des  données des différents models pour pouvoir en disposer et les afficher ds la vue 
@@ -58,21 +61,38 @@ namespace wacdoprojet.Controllers
         }
 
         // GET: Affectations/Create
-        public IActionResult Create(int? restaurantId = null, string? collaborateurId = null, bool? retourrestaurant = null, bool? retourcollaborateur = null)
+        public async Task<IActionResult> Create(int? restaurantId = null, string? collaborateurId = null, bool? retourrestaurant = null, bool? retourcollaborateur = null)
         {
-            var affectation = new Affectation();
-
-            if (restaurantId.HasValue)
-                affectation.RestaurantId = restaurantId.Value;
-
-            if (!string.IsNullOrEmpty(collaborateurId))
-                affectation.CollaborateurId = collaborateurId;
+            var affectation = new Affectation
+            {
+                CollaborateurId = collaborateurId ?? "",  // nécessaire si [required]
+                RestaurantId = restaurantId ?? 0          // même remarque
+            };
 
             ViewBag.RetourRestaurant = retourrestaurant;
             ViewBag.RetourCollaborateur = retourcollaborateur;
 
-            ViewData["RestaurantId"] = new SelectList(_context.Restaurants, "Id", "name", affectation.RestaurantId);
+            ViewData["PosteId"] = new SelectList(_context.Postes, "Id", "Intituleposte");
             ViewData["CollaborateurId"] = new SelectList(_context.Collaborateurs, "Id", "Nom", affectation.CollaborateurId);
+            ViewData["RestaurantId"] = restaurantId.HasValue
+                ? (object)restaurantId.Value
+                : new SelectList(_context.Restaurants, "Id", "name");
+
+            // Pour l'affichage des affectations existantes (si retour depuis fiche restaurant)
+            if (restaurantId.HasValue)
+            {
+                var restaurant = await _context.Restaurants
+                    .Include(r => r.RestaurantAffectations!)
+                        .ThenInclude(a => a.Collaborateur)
+                    .Include(r => r.RestaurantAffectations!)
+                        .ThenInclude(a => a.Poste)
+                    .FirstOrDefaultAsync(r => r.Id == restaurantId);
+
+                if (restaurant == null)
+                    return NotFound();
+
+                ViewBag.AffectationsExistantes = restaurant.RestaurantAffectations;
+            }
 
             return View(affectation);
         }

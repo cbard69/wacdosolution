@@ -201,18 +201,38 @@ namespace wacdoprojet.Controllers
         // POST: Restaurants/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
-            var restaurant = await _context.Restaurants.FindAsync(id);
-            if (restaurant != null)
+            // On vérifie que id n'est pas  null
+            if (id == null)
+                return NotFound();
+
+            //var restaurant = await _context.Restaurants
+              //  .FirstOrDefaultAsync(r => r.Id == id.Value);
+
+            var restaurant = await _context.Restaurants
+           .Include(c => c.RestaurantAffectations)
+               .ThenInclude(a => a.Collaborateur)
+           .Include(c => c.RestaurantAffectations)
+               .ThenInclude(a => a.Poste)
+           .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (restaurant == null)
+                return NotFound();
+
+            // On regarde si  le collaborateur a des affectations
+            var aDesAffectations = await _context.Affectations.AnyAsync(a => a.RestaurantId  == id.Value);
+
+            if (aDesAffectations)
             {
-                _context.Restaurants.Remove(restaurant);
+                TempData["ErreurSuppression"] = "Impossible de supprimer ce restaurant car il a des affectations.";
+                return View("Delete", restaurant);
             }
 
+            _context.Restaurants.Remove(restaurant);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
         private bool RestaurantExists(int id)
         {
             return _context.Restaurants.Any(e => e.Id == id);

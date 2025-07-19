@@ -11,7 +11,7 @@ namespace wacdoprojet.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<bool>(
-                name: "Administrateur",
+                name: "Connectable",
                 table: "AspNetUsers",
                 type: "tinyint(1)",
                 nullable: false,
@@ -25,7 +25,7 @@ namespace wacdoprojet.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<bool>(
-                name: "Administrateur",
+                name: "Connectable",
                 table: "AspNetUsers",
                 type: "tinyint(1)",
                 nullable: true,

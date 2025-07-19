@@ -1,0 +1,38 @@
+﻿@model List<wacdoprojet.Models.Collaborateur>
+@{
+    ViewData["Title"] = "Gestion des rôles";
+    var roles = ViewBag.Roles as List<Microsoft.AspNetCore.Identity.IdentityRole>;
+}
+
+<h1>Gestion des rôles</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Attribuer un rôle</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Nom</td>
+                <td>@user.Email</td>
+                <td>
+                    <form asp-action="AssignRole" method="post">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <select name="role" class="form-select">
+                            @foreach (var role in roles)
+                            {
+                                <option value="@role.Name">@role.Name</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">Attribuer</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

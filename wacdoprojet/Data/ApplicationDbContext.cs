@@ -22,6 +22,33 @@ namespace wacdoprojet.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Affectation>(entity =>
+            
+
+            {
+                entity.HasKey(a => a.Id);
+
+                // Collaborateur
+                entity.HasOne(a => a.Collaborateur)
+                    .WithMany(c => c.Collaborateuraffectation)
+                    .HasForeignKey(a => a.CollaborateurId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Poste
+                entity.HasOne(a => a.Poste)
+                    .WithMany(p => p.Posteaffectation)
+                    .HasForeignKey(a => a.PosteId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Restaurant
+                entity.HasOne(a => a.Restaurant)
+                    .WithMany(r => r.RestaurantAffectations)
+                    .HasForeignKey(a => a.RestaurantId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+
+
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {

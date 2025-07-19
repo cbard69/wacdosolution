@@ -41,6 +41,11 @@ namespace wacdoproject.Services
             Console.WriteLine($"FromEmail = {_configuration["SendGrid:FromEmail"]}");
             Console.WriteLine($"ToEmail = {email}");
 
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                throw new InvalidOperationException("La clé API SendGrid est manquante !");
+            }
+
 
 
         }

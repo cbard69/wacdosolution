@@ -39,7 +39,7 @@ else if (Model != null && Model.Any())
                 <th>Nom</th>
                 <th>Prénom</th>
                 <th>Email</th>
-                <th>Administrateur</th>
+                <th>Connectable</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -50,7 +50,7 @@ else if (Model != null && Model.Any())
                     <td>@item.Nom</td>
                     <td>@item.Prénom</td>
                     <td>@item.Email</td>
-                    <td>@(item.Administrateur ? "Oui" : "Non")</td>
+                    <td>@(item.Connectable ? "Oui" : "Non")</td>
                     <td>
                         <div class="btn-group" role="group">
                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Modifier</a>

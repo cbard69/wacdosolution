@@ -1,71 +1,4 @@
-﻿@* @ @model IEnumerable<wacdoprojet.Models.Affectation>
-
-@{
-    ViewData["Title"] = "liste des affectations";
-}
-
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create"> pour créer une affectation </a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CollaborateurId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RestaurantId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PosteId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Datedebut)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Datefin)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CollaborateurId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RestaurantId)
-                </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PosteId)
-            </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Datedebut)
-                </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Datefin)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-*@
-
-@*  nouveau code pour  ne plus afficher les ids *@
+﻿
 @model IEnumerable<wacdoprojet.Models.Affectation>
 
 @{
@@ -73,6 +6,16 @@
 }
 
 <h1>Les affectations</h1>
+<!-- Formulaire de recherche -->
+<form method="get" class="mb-3">
+    <div class="d-flex" style="gap: 8px;">
+        <input type="text" name="Poste" value="@ViewBag.PosteRecherche" placeholder="Rechercher par poste..." />
+        <input type="text" name="datedebut" value="@ViewBag.DatedebutRecherche" placeholder="Rechercher par date de début..." />
+        <input type="text" name="datefin" value="@ViewBag.DatefinRecherche" placeholder="Rechercher par date de fin.." />
+        <input type="text" name="ville" value="@ViewBag.VilleRecherche" placeholder="Rechercher par ville..." />
+        <input type="submit" value="Rechercher" class="btn btn-primary" />
+    </div>
+</form>
 
 <p>
     <a asp-action="Create">Créer une affectation</a>
@@ -81,8 +24,8 @@
 <table class="table">
     <thead>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.Id)</th>
-            <th>Collaborateur</th>
+            <th>Nom Collaborateur</th>
+            <th>Prénom Collaborateur</th>
             <th>Restaurant</th>
             <th>Poste</th>
             <th>@Html.DisplayNameFor(model => model.Datedebut)</th>
@@ -94,16 +37,16 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.Id</td>
-                <td>@item.Collaborateur?.Nom @item.Collaborateur?.Prénom</td>
+                <td>@item.Collaborateur?.Nom </td>
+                <td>@item.Collaborateur?.Prénom</td>
                 <td>@item.Restaurant?.name</td>
                 <td>@item.Poste?.Intituleposte</td>
                 <td>@item.Datedebut.ToShortDateString()</td>
                 <td>@item.Datefin?.ToShortDateString()</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Editer</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Détails</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Supprimer</a>
                 </td>
             </tr>
         }

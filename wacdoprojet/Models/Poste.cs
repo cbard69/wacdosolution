@@ -6,6 +6,7 @@ namespace wacdoprojet.Models
 
     {   public int Id { get; set; }
         public string? Intituleposte { get; set;}
-        public List<Affectation>? Posteaffectation { get; set; }
+        public List<Affectation> Posteaffectation { get; set; } = new List<Affectation>();
+
     }
 }

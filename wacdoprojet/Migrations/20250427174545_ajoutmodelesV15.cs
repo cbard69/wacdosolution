@@ -13,7 +13,7 @@ namespace wacdoprojet.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
-                name: "Administrateur",
+                name: "Connectable",
                 table: "AspNetUsers",
                 type: "tinyint(1)",
                 nullable: true);
@@ -131,7 +131,7 @@ namespace wacdoprojet.Migrations
                 name: "Restaurants");
 
             migrationBuilder.DropColumn(
-                name: "Administrateur",
+                name: "Connectable",
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(

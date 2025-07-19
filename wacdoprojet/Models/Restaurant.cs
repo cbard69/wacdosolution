@@ -11,7 +11,7 @@ namespace wacdoprojet.Models
         public string? ville { get; set; }
 
         // A un restaurant correspond 0 ou N affectations
-        public List<Affectation>? RestaurantAffectations { get; set; }
+        public List<Affectation> RestaurantAffectations { get; set; } = new List<Affectation>();
 
     }
 }

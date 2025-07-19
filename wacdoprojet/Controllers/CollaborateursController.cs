@@ -5,7 +5,9 @@ using wacdoprojet.Data;
 using wacdoprojet.Models;
 using System.Composition;
 using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize]
 public class CollaborateursController : Controller
 {
     private readonly UserManager<Collaborateur> _userManager;
@@ -40,7 +42,7 @@ public class CollaborateursController : Controller
             return View(collaborateur);
 
         // S’il est administrateur, créer le compte Identity
-        if (collaborateur.Administrateur == true)
+        if (collaborateur.Connectable == true)
         {
             if (string.IsNullOrWhiteSpace(password))
             {
@@ -75,8 +77,9 @@ public class CollaborateursController : Controller
     }
 
 
+
     // GET: Collaborateurs
-    // GET: Collaborateurs
+    [AllowAnonymous]
     public async Task<IActionResult> Index(string name, string prenom, string email, bool nonAffectes = false)
     {
         ViewBag.NomRecherche = name;
@@ -117,18 +120,19 @@ public class CollaborateursController : Controller
         if (id == null) return NotFound();
 
         var collaborateur = await _context.Collaborateurs
-            .Include(c => c.Collaborateuraffectation!)
+            .Include(c => c.Collaborateuraffectation)
                 .ThenInclude(a => a.Restaurant)
-            .Include(c => c.Collaborateuraffectation!)
+            .Include(c => c.Collaborateuraffectation)
                 .ThenInclude(a => a.Poste)
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (collaborateur == null) return NotFound();
 
-        // On récupère ses affectations, même passées
-        var affectations = collaborateur.Collaborateuraffectation!.AsQueryable();
+        // On récupère toutes  ses affectations
 
-        // On filtre dans la liste uniquement SES affectations
+        var affectations = collaborateur.Collaborateuraffectation.AsQueryable();
+
+        // On filtre dans la liste uniquement ses affectations
         if (!string.IsNullOrWhiteSpace(nom))
             affectations = affectations.Where(a => a.Collaborateur.Nom != null && a.Collaborateur.Nom.Contains(nom, StringComparison.OrdinalIgnoreCase));
 
@@ -191,12 +195,12 @@ public class CollaborateursController : Controller
             userToUpdate.Prénom = collaborateur.Prénom;
             userToUpdate.Email = collaborateur.Email;
             userToUpdate.UserName = collaborateur.Email;
-            userToUpdate.Administrateur = collaborateur.Administrateur;
+            userToUpdate.Connectable = collaborateur.Connectable;
             userToUpdate.Datepremiereembauche = collaborateur.Datepremiereembauche;
 
             //=== DEBUT ======  IL N'EST PLUS ADMINISTRATEUR ==========
 
-            if (!collaborateur.Administrateur)
+            if (!collaborateur.Connectable)
             {
                 // Supprimer mot de passe s'il en a un
                 var hasPassword = await _userManager.HasPasswordAsync(userToUpdate);
@@ -218,7 +222,7 @@ public class CollaborateursController : Controller
             //==== FIN =====  IL N'EST PLUS ADMINISTRATEUR ==========
 
             //==== DEBUT ==== IL EST COCHE ADMINISTRATEUR et IL L'ETAIT DEJA ===== ON REGARDE SI BESOIN MAJ PASSWORD
-            else if (!string.IsNullOrWhiteSpace(newPassword) && (userToUpdate.Administrateur = true))
+            else if (!string.IsNullOrWhiteSpace(newPassword) && (userToUpdate.Connectable = true))
             // Si un nouveau mot de passe est fourni (cela suppose qu'on veut le changer)
 
             {
@@ -252,7 +256,7 @@ public class CollaborateursController : Controller
             //==== FIN ==== IL EST COCHE ADMINISTRATEUR et IL L'ETAIT DEJA ===== ON REGARDE SI BESOIN MAJ PASSWORD
 
             //==== DEBUT === IL EST ADMINISTRATEUR et IL NE L ETAIT PAS 
-            else if (userToUpdate.Administrateur == false)
+            else if (userToUpdate.Connectable == false)
             {
                 if (string.IsNullOrWhiteSpace(newPassword))
                 {
@@ -324,16 +328,43 @@ public class CollaborateursController : Controller
     }
 
     // POST: Collaborateurs/Delete/id
+   
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(string id)
     {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user != null)
+        if (id == null)
+            return NotFound();
+
+        // var collaborateur = await _context.Collaborateurs
+        //   .FirstOrDefaultAsync(c => c.Id == id);
+
+        var collaborateur = await _context.Collaborateurs
+           .Include(c => c.Collaborateuraffectation)
+               .ThenInclude(a => a.Restaurant)
+           .Include(c => c.Collaborateuraffectation)
+               .ThenInclude(a => a.Poste)
+           .FirstOrDefaultAsync(c => c.Id == id);
+
+
+
+        if (collaborateur == null)
+            return NotFound();
+
+        // On regarde si  le collaborateur a des affectations
+        var aDesAffectations = await _context.Affectations.AnyAsync(a => a.CollaborateurId == id);
+
+        // s'il a des affections  en cours ou passées, la suppresion est impossible
+        if (aDesAffectations)
         {
-            await _userManager.DeleteAsync(user);
+            TempData["ErreurSuppression"] = "Impossible de supprimer ce collaborateur car il a des affectations.";
+            //            return RedirectToAction("Details", new { id });
+            return View("Delete", collaborateur);      
         }
 
+        _context.Collaborateurs.Remove(collaborateur);
+        await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
+
 }

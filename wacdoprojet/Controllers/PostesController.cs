@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using wacdoprojet.Models;
 
 namespace wacdoprojet.Controllers
 {
+    [Authorize]
     public class PostesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,6 +22,7 @@ namespace wacdoprojet.Controllers
         }
 
         // GET: Postes
+        [AllowAnonymous]
         public async Task<IActionResult> Index(string intitulePoste, string sortOrder)
         {   //  Pour conserver la valeur saisie dans le formulaire
             ViewBag.IntitulePosteRecherche = intitulePoste;
@@ -168,12 +171,26 @@ namespace wacdoprojet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var poste = await _context.Postes.FindAsync(id);
-            if (poste != null)
+           
+            var poste = await _context.Postes
+          .Include(c => c.Posteaffectation)
+              .ThenInclude(a => a.Collaborateur)
+          .Include(c => c.Posteaffectation)
+              .ThenInclude(a => a.Restaurant)
+          .FirstOrDefaultAsync(c => c.Id == id);
+
+
+            // On regarde si  le collaborateur a des affectations
+            var aDesAffectations = await _context.Affectations.AnyAsync(a => a.PosteId == id);
+
+            if (aDesAffectations)
             {
-                _context.Postes.Remove(poste);
+                TempData["ErreurSuppression"] = "Impossible de supprimer ce poste car il a des affectations.";
+                return View("Delete", poste);
             }
 
+
+            _context.Postes.Remove(poste);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

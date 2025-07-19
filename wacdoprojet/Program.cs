@@ -6,6 +6,12 @@ using wacdoprojet.Data;
 using wacdoprojet.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddUserSecrets<Program>() // 🔑 Ajout pour activer user-secrets
+    .AddEnvironmentVariables();
+
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -18,7 +24,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
 builder.Services.AddDefaultIdentity<Collaborateur>(options => options.SignIn.RequireConfirmedAccount = true)
-.AddEntityFrameworkStores<ApplicationDbContext>();
+     .AddRoles<IdentityRole>() // ⬅️ Nécessaire pour activer les rôles
+     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
 
@@ -26,7 +33,17 @@ builder.Services.AddControllersWithViews();
 // ajout le 01062025
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+//Console.WriteLine("API Key test depuis Program.cs: " + builder.Configuration["SendGrid:ApiKey"]);
 var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await DbInitializer.SeedRolesAsync(services);
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

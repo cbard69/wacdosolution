@@ -210,7 +210,7 @@ namespace wacdoprojet.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("Administrateur")
+                    b.Property<bool?>("Connectable")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("ConcurrencyStamp")

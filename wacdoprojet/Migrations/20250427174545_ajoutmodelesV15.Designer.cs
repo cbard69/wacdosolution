@@ -325,7 +325,7 @@ namespace wacdoprojet.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<bool?>("Administrateur")
+                    b.Property<bool?>("Connectable")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("Datepremiereembauche")

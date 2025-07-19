@@ -16,7 +16,7 @@ namespace wacdoprojet.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -208,13 +208,13 @@ namespace wacdoprojet.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Administrateur")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("Connectable")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("Datepremiereembauche")
                         .HasColumnType("datetime(6)");
@@ -381,19 +381,19 @@ namespace wacdoprojet.Migrations
                     b.HasOne("wacdoprojet.Models.Collaborateur", "Collaborateur")
                         .WithMany("Collaborateuraffectation")
                         .HasForeignKey("CollaborateurId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("wacdoprojet.Models.Poste", "Poste")
                         .WithMany("Posteaffectation")
                         .HasForeignKey("PosteId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("wacdoprojet.Models.Restaurant", "Restaurant")
                         .WithMany("RestaurantAffectations")
                         .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Collaborateur");
