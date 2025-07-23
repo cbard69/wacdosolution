@@ -10,15 +10,15 @@
 <form method="get" class="mb-3">
     <div class="d-flex" style="gap: 8px;">
         <input type="text" name="Poste" value="@ViewBag.PosteRecherche" placeholder="Rechercher par poste..." />
+        <input type="text" name="ville" value="@ViewBag.VilleRecherche" placeholder="Rechercher par ville..." />
         <input type="text" name="datedebut" value="@ViewBag.DatedebutRecherche" placeholder="Rechercher par date de début..." />
         <input type="text" name="datefin" value="@ViewBag.DatefinRecherche" placeholder="Rechercher par date de fin.." />
-        <input type="text" name="ville" value="@ViewBag.VilleRecherche" placeholder="Rechercher par ville..." />
         <input type="submit" value="Rechercher" class="btn btn-primary" />
     </div>
 </form>
 
 <p>
-    <a asp-action="Create">Créer une affectation</a>
+    <a asp-action="Create" class="btn btn-success">Créer une affectation</a>
 </p>
 
 <table class="table">
@@ -28,8 +28,9 @@
             <th>Prénom Collaborateur</th>
             <th>Restaurant</th>
             <th>Poste</th>
-            <th>@Html.DisplayNameFor(model => model.Datedebut)</th>
-            <th>@Html.DisplayNameFor(model => model.Datefin)</th>
+            <th>Date de début</th>
+            <th>Date de fin</th>
+            <th>Actions</th>
             <th></th>
         </tr>
     </thead>
@@ -43,10 +44,11 @@
                 <td>@item.Poste?.Intituleposte</td>
                 <td>@item.Datedebut.ToShortDateString()</td>
                 <td>@item.Datefin?.ToShortDateString()</td>
+
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Editer</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Détails</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Supprimer</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Editer</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Détails</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Supprimer</a>
                 </td>
             </tr>
         }

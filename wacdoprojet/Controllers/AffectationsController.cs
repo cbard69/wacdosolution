@@ -23,17 +23,54 @@ namespace wacdoprojet.Controllers
 
         // GET: Affectations
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        
+        public async Task<IActionResult> Index(string poste, string datedebut, string datefin, string ville)
         {
-            // chargement des  données des différents models pour pouvoir en disposer et les afficher ds la vue 
-            var affectationsAvecRelations = _context.Affectations
-           .Include(a => a.Collaborateur)
-           .Include(a => a.Restaurant)
-           .Include(a => a.Poste);
+            ViewBag.PosteRecherche = poste;
+            ViewBag.DatedebutRecherche = datedebut;
+            ViewBag.DatefinRecherche = datefin;
+            ViewBag.VilleRecherche = ville;
 
-            return View(await affectationsAvecRelations.ToListAsync());
-          
+            var affectations = _context.Affectations
+                .Include(a => a.Collaborateur)
+                .Include(a => a.Restaurant)
+                .Include(a => a.Poste)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(poste))
+            {
+                affectations = affectations.Where(a =>
+                    a.Poste != null &&
+                    a.Poste.Intituleposte != null &&
+                    EF.Functions.Like(a.Poste.Intituleposte, $"%{poste}%"));
+            }
+
+            if (!string.IsNullOrEmpty(ville))
+            {
+                affectations = affectations.Where(a =>
+                    a.Restaurant != null &&
+                    a.Restaurant.ville != null &&
+                    EF.Functions.Like(a.Restaurant.ville, $"%{ville}%"));
+            }
+
+            if (DateTime.TryParse(datedebut, out var debutDate))
+            {
+                affectations = affectations.Where(a => a.Datedebut.Date == debutDate.Date);
+            }
+
+            if (DateTime.TryParse(datefin, out var finDate))
+            {
+                affectations = affectations.Where(a => a.Datefin.HasValue && a.Datefin.Value.Date == finDate.Date);
+            }
+
+            var results = await affectations.ToListAsync();
+
+            ViewBag.AucunResultat = (!string.IsNullOrEmpty(poste) || !string.IsNullOrEmpty(ville) || !string.IsNullOrEmpty(datedebut) || !string.IsNullOrEmpty(datefin))
+                                    && !results.Any();
+
+            return View(results);
         }
+
 
         // GET: Affectations/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -152,12 +189,10 @@ namespace wacdoprojet.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,RestaurantId,PosteId,CollaborateurId,Datedebut,Datefin")] Affectation affectation)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,RestaurantId,PosteId,CollaborateurId,Datedebut,Datefin")] Affectation affectation , bool? retourCollaborateur)
         {
             if (id != affectation.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -165,27 +200,37 @@ namespace wacdoprojet.Controllers
                 {
                     _context.Update(affectation);
                     await _context.SaveChangesAsync();
+
+                    // Si on veut revenir sur le détail du collaborateur
+                    if (retourCollaborateur == true)
+                    {
+                        return RedirectToAction("Details", "Collaborateurs", new { id = affectation.CollaborateurId });
+                    }
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AffectationExists(affectation.Id))
-                    {
+                    if (!_context.Affectations.Any(e => e.Id == affectation.Id))
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            // ... viewbags si retour
             ViewData["PosteId"] = new SelectList(_context.Postes, "Id", "Intituleposte", affectation.PosteId);
             ViewData["CollaborateurId"] = new SelectList(_context.Collaborateurs, "Id", "Nom", affectation.CollaborateurId);
             ViewData["RestaurantId"] = new SelectList(_context.Restaurants, "Id", "name", affectation.RestaurantId);
 
+
             return View(affectation);
         }
-
+        
+        
+        
+        
+        
         // GET: Affectations/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

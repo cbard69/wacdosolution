@@ -1,38 +1,30 @@
-﻿@model List<wacdoprojet.Models.Collaborateur>
-@{
-    ViewData["Title"] = "Gestion des rôles";
-    var roles = ViewBag.Roles as List<Microsoft.AspNetCore.Identity.IdentityRole>;
-}
+﻿@model List<wacdoprojet.ViewModels.UserWithRoleViewModel>
 
-<h1>Gestion des rôles</h1>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nom</th>
-            <th>Email</th>
-            <th>Attribuer un rôle</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
+<form asp-action="UpdateRole" method="post">
+    <table class="table">
+        <thead>
             <tr>
-                <td>@user.Nom</td>
-                <td>@user.Email</td>
-                <td>
-                    <form asp-action="AssignRole" method="post">
-                        <input type="hidden" name="userId" value="@user.Id" />
-                        <select name="role" class="form-select">
-                            @foreach (var role in roles)
-                            {
-                                <option value="@role.Name">@role.Name</option>
-                            }
-                        </select>
-                        <button type="submit" class="btn btn-primary btn-sm">Attribuer</button>
-                    </form>
-                </td>
+                <th>Nom</th>
+                <th>Rôle actuel</th>
+                <th>Changer de rôle</th>
+                <th>Action</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>@Model[i].UserName</td>
+                    <td>@Model[i].RoleName</td>
+                    <td>
+                        <select asp-for="@Model[i].SelectedRoleId" asp-items="@(new SelectList(Model[i].AvailableRoles, "Id", "Name"))" name="updatedRoles[@Model[i].UserId]">
+                        </select>
+                    </td>
+                    <td>
+                        <button type="submit" name="userId" value="@Model[i].UserId">Mettre à jour</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>

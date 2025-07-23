@@ -22,7 +22,7 @@ namespace wacdoprojet.Controllers
         }
 
         // GET: Postes
-        [AllowAnonymous]
+       
         public async Task<IActionResult> Index(string intitulePoste, string sortOrder)
         {   //  Pour conserver la valeur saisie dans le formulaire
             ViewBag.IntitulePosteRecherche = intitulePoste;

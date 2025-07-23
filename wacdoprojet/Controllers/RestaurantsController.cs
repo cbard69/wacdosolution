@@ -9,7 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using wacdoprojet.Data;
 using wacdoprojet.Models;
 
+
+
+
 namespace wacdoprojet.Controllers
+    
 {
     [Authorize]
     public class RestaurantsController : Controller

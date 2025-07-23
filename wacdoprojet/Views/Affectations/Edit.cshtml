@@ -1,10 +1,10 @@
 ﻿@model wacdoprojet.Models.Affectation
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edition";
 }
 
-<h1>Edit</h1>
+<h1>Edition</h1>
 
 <h4>Affectation</h4>
 <hr />
@@ -14,46 +14,48 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
      <div class="form-group">
-            <label asp-for="Restaurant" class="control-label"></label>
+            <label asp-for="Restaurant" class="control-label">Restaurant</label>
             <select asp-for="RestaurantId" class="form-control"
                     asp-items="ViewBag.RestaurantId"></select>
             <span asp-validation-for="RestaurantId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Collaborateur" class="control-label"></label>
+        <label asp-for="Collaborateur" class="control-label">Collaborateur</label>
         <select asp-for="CollaborateurId" class="form-control"
                 asp-items="ViewBag.CollaborateurId"></select>
         <span asp-validation-for="CollaborateurId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Poste" class="control-label"></label>
+        <label asp-for="Poste" class="control-label">Poste</label>
         <select asp-for="PosteId" class="form-control"
                 asp-items="ViewBag.PosteId"></select>
         <span asp-validation-for="PosteId" class="text-danger"></span>
     </div>
 
             <div class="form-group">
-                <label asp-for="Datedebut" class="control-label"></label>
+                <label asp-for="Datedebut" class="control-label">Date de début</label>
                 <input asp-for="Datedebut" class="form-control" />
                 <span asp-validation-for="Datedebut" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Datefin" class="control-label"></label>
+                <label asp-for="Datefin" class="control-label">Date de fin</label>
                 <input asp-for="Datefin" class="form-control" />
                 <span asp-validation-for="Datefin" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Enregistrer" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Retour à la liste</a>
 </div>
+
+@Html.Hidden("RetourCollaborateur", true)
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -1,10 +1,10 @@
 ﻿@model wacdoprojet.Models.Affectation
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Détails Affectations";
 }
 
-<h1>Details</h1>
+<h1>Détails</h1>
 
 <div>
     <h4>Affectation</h4>
@@ -43,6 +43,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-sm">Modifier</a> |
+    <a asp-action="Index">Retour à la liste</a>
 </div>

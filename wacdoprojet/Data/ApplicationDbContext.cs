@@ -4,11 +4,11 @@ using wacdoprojet.Models;
 
 namespace wacdoprojet.Data
 {
-    //  avant  le  1105202  public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
+    
     public class ApplicationDbContext : IdentityDbContext<Collaborateur>
     
     {
-        // mise place  dece cosntructeur le 11052025
+       
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
        : base(options)
         {

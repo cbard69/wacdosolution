@@ -1,10 +1,10 @@
 ﻿@model wacdoprojet.Models.Restaurant
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edition";
 }
 
-<h1>Edit</h1>
+<h1>Edition</h1>
 
 <h4>Restaurant</h4>
 <hr />
@@ -14,34 +14,34 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="name" class="control-label"></label>
+                <label asp-for="name" class="control-label">Nom restaurant</label>
                 <input asp-for="name" class="form-control" />
                 <span asp-validation-for="name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="adresse" class="control-label"></label>
+                <label asp-for="adresse" class="control-label">Adresse du restaurant</label>
                 <input asp-for="adresse" class="form-control" />
                 <span asp-validation-for="adresse" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="cp" class="control-label"></label>
+                <label asp-for="cp" class="control-label">Code postal</label>
                 <input asp-for="cp" class="form-control" />
                 <span asp-validation-for="cp" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ville" class="control-label"></label>
+                <label asp-for="ville" class="control-label">Ville</label>
                 <input asp-for="ville" class="form-control" />
                 <span asp-validation-for="ville" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Enregistrer" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Retour à la liste</a>
 </div>
 
 @section Scripts {

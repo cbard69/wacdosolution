@@ -38,20 +38,17 @@
 </div>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-sm"  >Modifier</a> |
     <a asp-action="Index">Retour à la liste</a>
 </div>
 <h4 class="mt-4">Filtrer les affectations</h4>
 
 <form method="get" asp-action="Details" asp-route-id="@Model.Id" class="row g-3 mb-4">
     <div class="col-md-3">
-        <label class="bg-info text-white d-block text-center px-2 py-1">Nom</label>
-        <input type="text" name="nom" value="@ViewBag.FiltreNom" class="form-control" placeholder="Nom" />
+        <label class="bg-info text-white d-block text-center px-2 py-1">Restaurant</label>
+        <input type="text" name="restaurant" value="@ViewBag.FiltreRestaurant" class="form-control" placeholder="Restaurant" />
     </div>
-    <div class="col-md-3">
-        <label class="bg-info text-white d-block text-center px-2 py-1">Prénom</label>
-        <input type="text" name="prenom" value="@ViewBag.FiltrePrenom" class="form-control" placeholder="Prénom" />
-    </div>
+    
     <div class="col-md-3">
         <label class="bg-info text-white d-block text-center px-2 py-1">Poste</label>
         <input type="text" name="poste" value="@ViewBag.FiltrePoste" class="form-control" placeholder="Poste" />
@@ -83,10 +80,7 @@
             @if (affectationEnCours != null)
             {
                 <div class="alert alert-warning">
-                    <strong>⚠ Affectation en cours détectée :</strong><br />
-                    Restaurant : <strong>@affectationEnCours.Restaurant?.name</strong><br />
-                    Poste : <strong>@affectationEnCours.Poste?.Intituleposte</strong><br />
-                    Début : <strong>@affectationEnCours.Datedebut.ToString("dd/MM/yyyy")</strong>
+                    <strong>⚠ Il y a  au moins une affectation  en cours détectée </strong><br />
                 </div>
             }
             @* ========================================================================================*@
@@ -100,6 +94,7 @@
                         <th>Intitulé du poste</th>
                         <th>Date de début </th>
                         <th>Date de fin</th>
+                        <th>Actions</th>
                      </tr>
                      </thead>
                <tbody>
@@ -117,6 +112,14 @@
                             <td>@aff.Poste?.Intituleposte</td>
                             <td>@aff.Datedebut</td>
                             <td>@aff.Datefin</td>
+                            <td>
+                                <a asp-controller="Affectations"
+                                   asp-action="Edit"
+                                   asp-route-id="@aff.Id"
+                                   class="btn btn-sm btn-warning">
+                                    Modifier
+                                </a>
+                            </td>
                           </tr>                     
                   
                 }

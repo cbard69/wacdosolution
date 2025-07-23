@@ -13,9 +13,9 @@ public class CollaborateursController : Controller
     private readonly UserManager<Collaborateur> _userManager;
     private readonly ApplicationDbContext _context;
     // besoinde Usermanager pour UserManager<Collaborateur> est orienté utilisateur (authentification, sécurité, mot de passe, rôles, etc.).
-    // Mais il n’expose pas directement les propriétés personnalisées que tu veux modifier ou sauvegarder.
+    // Mais il n’expose pas directement les propriétés personnalisées que l'on veut modifier ou sauvegarder.
 
-    //ApplicationDbContext pour manipuler les propriétés personnalisées que tu as ajoutées à ta classe Collaborateur en dehors de ce que IdentityUser fournit.
+    //ApplicationDbContext pour manipuler les propriétés personnalisées  ajoutées à la classe Collaborateur en dehors de ce que IdentityUser fournit.
 
 
     public CollaborateursController(UserManager<Collaborateur> userManager, ApplicationDbContext context)
@@ -29,7 +29,12 @@ public class CollaborateursController : Controller
     // GET: Collaborateurs/Create
     public IActionResult Create()
     {
-        return View();
+        var collaborateur = new Collaborateur
+        {
+            Nom = "",
+            Datepremiereembauche = DateTime.Today
+        };
+        return View(collaborateur);
     }
 
     // POST: Collaborateurs/Create
@@ -41,7 +46,7 @@ public class CollaborateursController : Controller
         if (!ModelState.IsValid)
             return View(collaborateur);
 
-        // S’il est administrateur, créer le compte Identity
+        // S’il est connectable, créer le compte Identity
         if (collaborateur.Connectable == true)
         {
             if (string.IsNullOrWhiteSpace(password))
@@ -53,7 +58,7 @@ public class CollaborateursController : Controller
             // Email et UserName requis pour Identity
             collaborateur.UserName = collaborateur.Email;
 
-            // permettre quun utilisateur puisse se connecter
+            // permettre qu'un utilisateur puisse se connecter
             collaborateur.EmailConfirmed = true;
 
             var result = await _userManager.CreateAsync(collaborateur, password);
@@ -79,7 +84,7 @@ public class CollaborateursController : Controller
 
 
     // GET: Collaborateurs
-    [AllowAnonymous]
+  
     public async Task<IActionResult> Index(string name, string prenom, string email, bool nonAffectes = false)
     {
         ViewBag.NomRecherche = name;
@@ -115,7 +120,7 @@ public class CollaborateursController : Controller
 
 
     // GET: Collaborateurs/Details/id
-    public async Task<IActionResult> Details(string id, string nom, string prenom, string poste, DateTime? dateDebut)
+    public async Task<IActionResult> Details(string id, string restaurant, string poste, DateTime? dateDebut)
     {
         if (id == null) return NotFound();
 
@@ -133,11 +138,9 @@ public class CollaborateursController : Controller
         var affectations = collaborateur.Collaborateuraffectation.AsQueryable();
 
         // On filtre dans la liste uniquement ses affectations
-        if (!string.IsNullOrWhiteSpace(nom))
-            affectations = affectations.Where(a => a.Collaborateur.Nom != null && a.Collaborateur.Nom.Contains(nom, StringComparison.OrdinalIgnoreCase));
-
-        if (!string.IsNullOrWhiteSpace(prenom))
-            affectations = affectations.Where(a => a.Collaborateur.Prénom != null && a.Collaborateur.Prénom.Contains(prenom, StringComparison.OrdinalIgnoreCase));
+        
+        if (!string.IsNullOrWhiteSpace(restaurant))
+            affectations = affectations.Where(a => a.Restaurant.name != null && a.Restaurant.name.Contains(restaurant, StringComparison.OrdinalIgnoreCase));
 
         if (!string.IsNullOrWhiteSpace(poste))
             affectations = affectations.Where(a => a.Poste.Intituleposte != null && a.Poste.Intituleposte.Contains(poste, StringComparison.OrdinalIgnoreCase));
@@ -148,8 +151,7 @@ public class CollaborateursController : Controller
         // Remplacement de la liste d’origine par la liste filtrée
         collaborateur.Collaborateuraffectation = affectations.ToList();
 
-        ViewBag.FiltreNom = nom;
-        ViewBag.FiltrePrenom = prenom;
+        ViewBag.FiltreRestaurant = restaurant;
         ViewBag.FiltrePoste = poste;
         ViewBag.FiltreDateDebut = dateDebut?.ToString("yyyy-MM-dd");
 
